@@ -19,7 +19,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.AvailableQuantity)
             .IsRequired();
 
-        // Configure Value Object "Money"
         builder.OwnsOne(p => p.Price, priceBuilder =>
         {
             priceBuilder.Property(m => m.Amount)

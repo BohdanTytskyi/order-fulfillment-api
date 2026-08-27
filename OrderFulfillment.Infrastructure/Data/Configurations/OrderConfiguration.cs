@@ -13,16 +13,14 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasKey(o => o.Id);
 
         builder.Property(o => o.UserId).IsRequired();
-        builder.Property(o => o.Status).IsRequired().HasConversion<string>(); // Save enum as string
+        builder.Property(o => o.Status).IsRequired().HasConversion<string>();
         builder.Property(o => o.DiscountPercentage).HasColumnType("numeric(5,2)");
 
-        // One-to-Many relationship with OrderItems
         builder.HasMany(o => o.Items)
             .WithOne()
-            .HasForeignKey("OrderId") // Shadow foreign key
+            .HasForeignKey("OrderId")
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Tell EF Core to ignore DomainEvents (they are not saved in columns)
         builder.Ignore(o => o.DomainEvents);
     }
 }
