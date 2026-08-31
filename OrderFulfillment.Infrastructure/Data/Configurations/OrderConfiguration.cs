@@ -36,7 +36,6 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.Property(i => i.ProductId).IsRequired();
         builder.Property(i => i.Quantity).IsRequired();
 
-        // Configure Value Object "Money" for UnitPrice
         builder.OwnsOne(i => i.UnitPrice, priceBuilder =>
         {
             priceBuilder.Property(m => m.Amount)
