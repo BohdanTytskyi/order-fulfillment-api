@@ -19,6 +19,11 @@ public class ProductRepository : IProductRepository
         return await _context.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
+    public async Task AddAsync(Product product, CancellationToken cancellationToken = default)
+    {
+        await _context.Products.AddAsync(product, cancellationToken);
+    }
+
     public Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
     {
         _context.Products.Update(product);
