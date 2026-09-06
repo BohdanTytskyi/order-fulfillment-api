@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderFulfillment.Application.Interfaces;
+using OrderFulfillment.Infrastructure.BackgroundJobs;
 using OrderFulfillment.Infrastructure.Data;
 using OrderFulfillment.Infrastructure.Repositories;
 using OrderFulfillment.Infrastructure.Services;
@@ -32,6 +33,8 @@ public static class DependencyInjection
             ConnectionMultiplexer.Connect(redisConnection));
 
         services.AddScoped<IDistributedLockService, RedisDistributedLockService>();
+
+        services.AddHostedService<OutboxProcessorBackgroundService>();
 
         return services;
     }
