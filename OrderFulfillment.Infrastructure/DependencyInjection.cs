@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OrderFulfillment.Application.Interfaces;
 using OrderFulfillment.Infrastructure.Data;
 using OrderFulfillment.Infrastructure.Repositories;
+using OrderFulfillment.Infrastructure.Services;
+using StackExchange.Redis;
 
 namespace OrderFulfillment.Infrastructure;
 
@@ -24,6 +26,12 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        string redisConnection = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        services.AddSingleton<IConnectionMultiplexer>((IServiceProvider provider) =>
+            ConnectionMultiplexer.Connect(redisConnection));
+
+        services.AddScoped<IDistributedLockService, RedisDistributedLockService>();
 
         return services;
     }
