@@ -1,0 +1,32 @@
+@baseUrl = http://localhost:5200
+
+### 1. Create a Product
+# @name createProduct
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard Pro",
+  "priceAmount": 149.99,
+  "currency": "USD",
+  "initialQuantity": 50
+}
+
+### 2. Get Product by ID (replace with created product ID)
+@productId = {{createProduct.response.body.productId}}
+GET {{baseUrl}}/api/products/{{productId}}
+
+### 3. Place an Order (Reserves inventory with Redis lock)
+# @name createOrder
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "productId": "{{productId}}",
+  "quantity": 2
+}
+
+### 4. Get Order by ID
+@orderId = {{createOrder.response.body.orderId}}
+GET {{baseUrl}}/api/orders/{{orderId}}

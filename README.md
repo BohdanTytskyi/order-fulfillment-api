@@ -1,5 +1,9 @@
 # Order Fulfillment & Inventory API
 
+[![CI](https://github.com/BohdanTytskyi/order-fulfillment-api/actions/workflows/ci.yml/badge.svg)](https://github.com/BohdanTytskyi/order-fulfillment-api/actions/workflows/ci.yml)
+![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+
 REST API for processing orders and managing product inventory, built with **.NET 10**, **PostgreSQL**, and **Redis**.
 
 ## Features
@@ -53,6 +57,7 @@ dotnet run --project OrderFulfillment.Api
 
 - Swagger UI: `http://localhost:5200/swagger`
 - Base URL: `http://localhost:5200`
+- Sample HTTP requests: [`api.http`](api.http)
 
 ### 3. Run Tests
 ```bash
