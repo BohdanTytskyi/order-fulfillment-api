@@ -145,4 +145,36 @@ public class GlobalExceptionHandlerTests
         problem.Detail.Should().NotContain("password=secret");
         problem.Instance.Should().Be("/api/orders");
     }
+
+    [Fact]
+    public async Task TryHandleAsync_WhenValidationException_Returns400BadRequestWithErrorsDictionary()
+    {
+        DefaultHttpContext context = CreateHttpContext("/api/orders");
+        Dictionary<string, string[]> validationErrors = new Dictionary<string, string[]>
+        {
+            { "Quantity", new string[] { "Quantity must be greater than zero." } },
+            { "CustomerId", new string[] { "CustomerId is required." } }
+        };
+        ValidationException exception = new ValidationException(validationErrors);
+
+        bool handled = await _handler.TryHandleAsync(context, exception, CancellationToken.None);
+
+        handled.Should().BeTrue();
+        context.Response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        context.Response.ContentType.Should().StartWith("application/problem+json");
+
+        context.Response.Body.Seek(0, SeekOrigin.Begin);
+        using StreamReader reader = new StreamReader(context.Response.Body);
+        string json = await reader.ReadToEndAsync();
+        HttpValidationProblemDetails? problem = JsonSerializer.Deserialize<HttpValidationProblemDetails>(json, _jsonOptions);
+
+        problem.Should().NotBeNull();
+        problem!.Status.Should().Be(400);
+        problem.Title.Should().Be("Validation Failed");
+        problem.Errors.Should().ContainKey("Quantity");
+        problem.Errors["Quantity"].Should().Contain("Quantity must be greater than zero.");
+        problem.Errors.Should().ContainKey("CustomerId");
+        problem.Errors["CustomerId"].Should().Contain("CustomerId is required.");
+        problem.Instance.Should().Be("/api/orders");
+    }
 }

@@ -19,8 +19,50 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
+        ProblemDetails problemDetails = CreateProblemDetails(httpContext, exception);
+
+        LogException(exception, problemDetails.Status ?? StatusCodes.Status500InternalServerError);
+
+        httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+
+        await httpContext.Response.WriteAsJsonAsync(
+            problemDetails,
+            problemDetails.GetType(),
+            options: null,
+            contentType: "application/problem+json",
+            cancellationToken: cancellationToken);
+
+        return true;
+    }
+
+    private static ProblemDetails CreateProblemDetails(HttpContext httpContext, Exception exception)
+    {
+        if (exception is ValidationException validationException)
+        {
+            return new HttpValidationProblemDetails(validationException.Errors)
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Validation Failed",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                Detail = "One or more validation errors occurred.",
+                Instance = httpContext.Request.Path
+            };
+        }
+
         (int statusCode, string title, string type, string detail) = MapException(exception);
 
+        return new ProblemDetails
+        {
+            Status = statusCode,
+            Title = title,
+            Type = type,
+            Detail = detail,
+            Instance = httpContext.Request.Path
+        };
+    }
+
+    private void LogException(Exception exception, int statusCode)
+    {
         if (statusCode >= StatusCodes.Status500InternalServerError)
         {
             _logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
@@ -29,25 +71,6 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             _logger.LogWarning("Handled application exception ({StatusCode}): {Message}", statusCode, exception.Message);
         }
-
-        ProblemDetails problemDetails = new ProblemDetails
-        {
-            Status = statusCode,
-            Title = title,
-            Type = type,
-            Detail = detail,
-            Instance = httpContext.Request.Path
-        };
-
-        httpContext.Response.StatusCode = statusCode;
-
-        await httpContext.Response.WriteAsJsonAsync(
-            problemDetails,
-            options: null,
-            contentType: "application/problem+json",
-            cancellationToken: cancellationToken);
-
-        return true;
     }
 
     private static (int StatusCode, string Title, string Type, string Detail) MapException(Exception exception)
