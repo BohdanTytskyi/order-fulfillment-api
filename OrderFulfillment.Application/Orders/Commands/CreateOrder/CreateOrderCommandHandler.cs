@@ -1,4 +1,5 @@
-﻿using MediatR;
+using MediatR;
+using OrderFulfillment.Application.Common.Exceptions;
 using OrderFulfillment.Application.Interfaces;
 using OrderFulfillment.Domain.Entities;
 
@@ -26,7 +27,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         
         if (product is null)
         {
-            throw new Exception($"Product {request.ProductId} not found.");
+            throw new ProductNotFoundException(request.ProductId);
         }
 
         product.Reserve(request.Quantity);

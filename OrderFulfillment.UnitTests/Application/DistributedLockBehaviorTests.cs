@@ -1,7 +1,8 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using MediatR;
 using NSubstitute;
 using OrderFulfillment.Application.Common.Behaviors;
+using OrderFulfillment.Application.Common.Exceptions;
 using OrderFulfillment.Application.Interfaces;
 using Xunit;
 
@@ -68,7 +69,7 @@ public class DistributedLockBehaviorTests
 
         Func<Task> act = async () => await _behavior.Handle(command, next, CancellationToken.None);
 
-        await act.Should().ThrowAsync<InvalidOperationException>()
+        await act.Should().ThrowAsync<DistributedLockException>()
             .WithMessage($"*Could not acquire distributed lock for key '{command.LockKey}'*");
 
         nextWasCalled.Should().BeFalse();

@@ -1,4 +1,5 @@
-﻿using MediatR;
+using MediatR;
+using OrderFulfillment.Application.Common.Exceptions;
 using OrderFulfillment.Application.Interfaces;
 
 namespace OrderFulfillment.Application.Common.Behaviors;
@@ -28,7 +29,7 @@ public class DistributedLockBehavior<TRequest, TResponse> : IPipelineBehavior<TR
 
         if (!lockAcquired)
         {
-            throw new InvalidOperationException($"Could not acquire distributed lock for key '{lockKey}'. Resource is currently busy.");
+            throw new DistributedLockException(lockKey);
         }
 
         try

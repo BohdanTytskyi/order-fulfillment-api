@@ -1,6 +1,7 @@
 using FluentAssertions;
 using MediatR;
 using OrderFulfillment.Application.Common.Behaviors;
+using OrderFulfillment.Application.Common.Exceptions;
 using OrderFulfillment.Application.Interfaces;
 using OrderFulfillment.Application.Orders.Commands.CreateOrder;
 using OrderFulfillment.Domain.Entities;
@@ -260,7 +261,7 @@ public class RedisDistributedLockConcurrencyTests : IAsyncLifetime
         List<PipelineExecutionResult> failures = results.Where((PipelineExecutionResult r) => !r.Succeeded).ToList();
         foreach (PipelineExecutionResult failure in failures)
         {
-            failure.Exception.Should().BeOfType<InvalidOperationException>();
+            failure.Exception.Should().BeOfType<DistributedLockException>();
             failure.Exception!.Message.Should().Contain("Could not acquire distributed lock");
         }
     }

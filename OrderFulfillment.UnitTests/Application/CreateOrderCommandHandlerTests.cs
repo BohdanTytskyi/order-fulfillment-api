@@ -1,8 +1,10 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NSubstitute;
+using OrderFulfillment.Application.Common.Exceptions;
 using OrderFulfillment.Application.Interfaces;
 using OrderFulfillment.Application.Orders.Commands.CreateOrder;
 using OrderFulfillment.Domain.Entities;
+using OrderFulfillment.Domain.Exceptions;
 using OrderFulfillment.Domain.ValueObjects;
 using Xunit;
 
@@ -61,8 +63,8 @@ public class CreateOrderCommandHandlerTests
 
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<Exception>()
-            .WithMessage($"Product {nonExistentProductId} not found.");
+        await act.Should().ThrowAsync<ProductNotFoundException>()
+            .WithMessage($"Product '{nonExistentProductId}' not found.");
 
         await _orderRepository.DidNotReceive().AddAsync(Arg.Any<Order>(), Arg.Any<CancellationToken>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -81,7 +83,7 @@ public class CreateOrderCommandHandlerTests
 
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await act.Should().ThrowAsync<InvalidOperationException>()
+        await act.Should().ThrowAsync<InsufficientStockException>()
             .WithMessage("*Not enough stock*");
 
         product.AvailableQuantity.Should().Be(1);

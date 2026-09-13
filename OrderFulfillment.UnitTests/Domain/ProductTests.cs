@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using OrderFulfillment.Domain.Entities;
+using OrderFulfillment.Domain.Exceptions;
 using OrderFulfillment.Domain.ValueObjects;
 using Xunit;
 
@@ -18,13 +19,13 @@ public class ProductTests
     }
 
     [Fact]
-    public void Reserve_WhenRequestedQuantityExceedsAvailableStock_ShouldThrowInvalidOperationException()
+    public void Reserve_WhenRequestedQuantityExceedsAvailableStock_ShouldThrowInsufficientStockException()
     {
         Product product = new Product(Guid.NewGuid(), "PlayStation 5", new Money(500m, "USD"), 2);
 
         Action act = () => product.Reserve(5);
 
-        act.Should().Throw<InvalidOperationException>()
+        act.Should().Throw<InsufficientStockException>()
             .WithMessage("*Not enough stock*");
     }
 

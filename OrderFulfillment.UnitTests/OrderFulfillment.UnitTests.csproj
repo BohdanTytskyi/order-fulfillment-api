@@ -25,6 +25,7 @@
     <ProjectReference Include="..\OrderFulfillment.Domain\OrderFulfillment.Domain.csproj" />
     <ProjectReference Include="..\OrderFulfillment.Application\OrderFulfillment.Application.csproj" />
     <ProjectReference Include="..\OrderFulfillment.Infrastructure\OrderFulfillment.Infrastructure.csproj" />
+    <ProjectReference Include="..\OrderFulfillment.Api\OrderFulfillment.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using OrderFulfillment.Domain.Common;
+using OrderFulfillment.Domain.Common;
+using OrderFulfillment.Domain.Exceptions;
 using OrderFulfillment.Domain.ValueObjects;
 
 namespace OrderFulfillment.Domain.Entities;
@@ -30,7 +31,7 @@ public class Product : Entity
             throw new ArgumentException("Must reserve at least 1 item.", nameof(quantity));
 
         if (AvailableQuantity < quantity)
-            throw new InvalidOperationException($"Not enough stock for product {Name}. Available: {AvailableQuantity}, Requested: {quantity}");
+            throw new InsufficientStockException(Name, AvailableQuantity, quantity);
 
         AvailableQuantity -= quantity;
     }
