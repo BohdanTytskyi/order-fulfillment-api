@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/BohdanTytskyi/order-fulfillment-api/actions/workflows/ci.yml/badge.svg)](https://github.com/BohdanTytskyi/order-fulfillment-api/actions/workflows/ci.yml)
 ![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 REST API for processing orders and managing product inventory, built with **.NET 10**, **PostgreSQL**, and **Redis**.
 
