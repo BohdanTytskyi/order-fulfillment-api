@@ -1,4 +1,4 @@
-﻿using OrderFulfillment.Domain.Common;
+using OrderFulfillment.Domain.Common;
 
 namespace OrderFulfillment.Domain.ValueObjects;
 
@@ -47,7 +47,7 @@ public class Money : ValueObject
         if (percentage < 0 || percentage > 100)
             throw new ArgumentException("Discount percentage must be between 0 and 100.", nameof(percentage));
 
-        var discountAmount = Amount * (percentage / 100m);
+        decimal discountAmount = Amount * (percentage / 100m);
         return new Money(Amount - discountAmount, Currency);
     }
 

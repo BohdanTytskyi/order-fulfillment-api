@@ -1,17 +1,17 @@
-﻿namespace OrderFulfillment.Domain.Common;
+namespace OrderFulfillment.Domain.Common;
 
 public abstract class ValueObject
 {
-    protected static bool EqualOperator(ValueObject left, ValueObject right)
+    protected static bool EqualOperator(ValueObject? left, ValueObject? right)
     {
         if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
         {
             return false;
         }
-        return ReferenceEquals(left, right) || left.Equals(right);
+        return ReferenceEquals(left, right) || (left is not null && left.Equals(right));
     }
 
-    protected static bool NotEqualOperator(ValueObject left, ValueObject right)
+    protected static bool NotEqualOperator(ValueObject? left, ValueObject? right)
     {
         return !(EqualOperator(left, right));
     }
@@ -25,7 +25,7 @@ public abstract class ValueObject
             return false;
         }
 
-        var other = (ValueObject)obj;
+        ValueObject other = (ValueObject)obj;
 
         return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }

@@ -1,4 +1,4 @@
-﻿using OrderFulfillment.Domain.Common;
+using OrderFulfillment.Domain.Common;
 using OrderFulfillment.Domain.Events;
 using OrderFulfillment.Domain.ValueObjects;
 
@@ -31,7 +31,7 @@ public class Order : AggregateRoot
         if (Status != OrderStatus.Pending)
             throw new InvalidOperationException("Cannot add items to an order that is not pending.");
 
-        var orderItem = new OrderItem(Guid.NewGuid(), productId, unitPrice, quantity);
+        OrderItem orderItem = new OrderItem(Guid.NewGuid(), productId, unitPrice, quantity);
         _items.Add(orderItem);
     }
 
@@ -40,10 +40,10 @@ public class Order : AggregateRoot
         if (!_items.Any())
             return Money.Zero();
 
-        var currency = _items.First().UnitPrice.Currency;
-        var total = Money.Zero(currency);
+        string currency = _items.First().UnitPrice.Currency;
+        Money total = Money.Zero(currency);
         
-        foreach (var item in _items)
+        foreach (OrderItem item in _items)
         {
             total += item.GetTotalPrice();
         }
@@ -66,7 +66,7 @@ public class Order : AggregateRoot
 
         Status = OrderStatus.Confirmed;
 
-        var totalAmount = CalculateTotal();
+        Money totalAmount = CalculateTotal();
         AddDomainEvent(new OrderCreatedEvent(Id, UserId, totalAmount));
     }
     
