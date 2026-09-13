@@ -48,7 +48,7 @@ public class GetOrderByIdQueryHandlerTests
         result.Status.Should().Be(OrderStatus.Confirmed.ToString());
         result.DiscountPercentage.Should().Be(10m);
         result.Currency.Should().Be("USD");
-        result.TotalAmount.Should().Be(216m); // (120 * 2) - 10% discount = 240 - 24 = 216
+        result.TotalAmount.Should().Be(216m);
         result.Items.Should().HaveCount(1);
 
         OrderItemResponseDto itemDto = result.Items[0];
