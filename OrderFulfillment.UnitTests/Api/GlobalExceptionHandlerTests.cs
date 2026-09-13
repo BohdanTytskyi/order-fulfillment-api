@@ -177,4 +177,25 @@ public class GlobalExceptionHandlerTests
         problem.Errors["CustomerId"].Should().Contain("CustomerId is required.");
         problem.Instance.Should().Be("/api/orders");
     }
+
+    [Fact]
+    public async Task TryHandleAsync_WhenOrderNotFoundException_Returns404NotFoundProblemDetails()
+    {
+        DefaultHttpContext context = CreateHttpContext("/api/orders/details");
+        Guid orderId = Guid.NewGuid();
+        OrderNotFoundException exception = new OrderNotFoundException(orderId);
+
+        bool handled = await _handler.TryHandleAsync(context, exception, CancellationToken.None);
+
+        handled.Should().BeTrue();
+        context.Response.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        context.Response.ContentType.Should().StartWith("application/problem+json");
+
+        ProblemDetails? problem = await ReadProblemDetailsAsync(context.Response);
+        problem.Should().NotBeNull();
+        problem!.Status.Should().Be(404);
+        problem.Title.Should().Be("Resource Not Found");
+        problem.Detail.Should().Contain(orderId.ToString());
+        problem.Instance.Should().Be("/api/orders/details");
+    }
 }

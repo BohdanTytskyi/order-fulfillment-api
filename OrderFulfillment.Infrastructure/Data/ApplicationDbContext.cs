@@ -1,13 +1,14 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using OrderFulfillment.Application.Interfaces;
 using OrderFulfillment.Domain.Common;
 using OrderFulfillment.Domain.Entities;
 using OrderFulfillment.Infrastructure.Outbox;
 
 namespace OrderFulfillment.Infrastructure.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Order> Orders { get; set; } = null!;

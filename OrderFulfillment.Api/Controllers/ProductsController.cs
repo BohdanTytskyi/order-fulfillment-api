@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using OrderFulfillment.Application.Interfaces;
+using OrderFulfillment.Application.Products.Queries.GetProductById;
 using OrderFulfillment.Domain.Entities;
 using OrderFulfillment.Domain.ValueObjects;
 
@@ -11,11 +13,16 @@ public record CreateProductRequest(string Name, decimal PriceAmount, string Curr
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
+    private readonly ISender _sender;
     private readonly IProductRepository _productRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ProductsController(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public ProductsController(
+        ISender sender,
+        IProductRepository productRepository,
+        IUnitOfWork unitOfWork)
     {
+        _sender = sender;
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
     }
@@ -23,21 +30,8 @@ public class ProductsController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        Product? product = await _productRepository.GetByIdAsync(id, cancellationToken);
-        
-        if (product is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(new
-        {
-            product.Id,
-            product.Name,
-            Price = product.Price.Amount,
-            Currency = product.Price.Currency,
-            product.AvailableQuantity
-        });
+        ProductResponseDto product = await _sender.Send(new GetProductByIdQuery(id), cancellationToken);
+        return Ok(product);
     }
 
     [HttpPost]
@@ -49,6 +43,6 @@ public class ProductsController : ControllerBase
         await _productRepository.AddAsync(product, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Ok(new { ProductId = product.Id });
+        return CreatedAtAction(nameof(GetById), new { id = product.Id }, new { ProductId = product.Id });
     }
 }
